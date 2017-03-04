@@ -37,7 +37,7 @@ xlabel('Microchip Test 1')
 ylabel('Microchip Test 2')
 
 % Specified in plot order
-%legend('y = 1', 'y = 0')
+legend('y = 1', 'y = 0')
 hold off;
 
 

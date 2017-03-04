@@ -49,4 +49,14 @@ grad = zeros(size(theta));
 
 grad = grad(:);
 
+h  = sigmoid( X * theta);
+a1 = y' * log(h) * (-1);
+a2 = ((1 - y)' * log(1 - h)) * (-1);
+J = (a1 + a2)/m;
+theta1 = theta(2:size(theta));
+reg = ((theta1' * theta1) * lambda)/(2 * m);
+J = J + reg;
+grad(1) = (X(:,1)' * (h - y))/m;
+grad(2:size(theta)) = (X(:,2:size(X)(:,2))' * (h - y))/m + (lambda/m)* theta1;
+
 end
