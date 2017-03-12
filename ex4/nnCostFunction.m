@@ -27,6 +27,7 @@ m = size(X, 1);
          
 % You need to return the following variables correctly 
 J = 0;
+
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
 
@@ -62,31 +63,45 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 X = [ones(m, 1) X];
+a1 = X;
 Z2 = X * Theta1';
 a2 = sigmoid(Z2);
 a2 = [ones(m, 1) a2];
-for unit=1:(hidden_layer_size + 1)
-    grad = Theta1_grad(:, unit);
-    grad(1) = (X(:,1)' * (a2(:,unit) - y))/m;
-    grad(2:hidden_layer_size) = (X(:,2:size(X)(:,2))' * (a2(:,unit) -y))/m + (lambda/m)* Theta1_grad(:,unit);
-    Theta1_grad(:,unit) = grad;
-end
 
 Z3 = a2 * Theta2';
 a3 = sigmoid(Z3);
-h = a3;
-s1 = zeros(num_labels);
-s2 = zeros(num_labels);
-j = zeros(num_labels);
-for out = 1:num_labels
-    s1(out) = y' * log(h(out)) * (-1);
-    s2(out) = ((1 - y)' * log(1 - h(out))) * (-1);
-    j(out) = (s1(out) + s2(out))/m
-end
-for i= 1:num_labels
-    J = J + j(i);
-end
-    J = J/num_labels;
+y_matrix = eye(num_labels)(y,:);
+s1= trace(y_matrix' * log(a3) *(-1));
+s2 = trace((1 - y_matrix)' * log(1 - a3) * (-1));
+J = (s1 + s2)/m;
+
+d3 = a3 - y_matrix;
+d2 = d3 * Theta2(:, 2:end);
+d2 = d2.*(sigmoidGradient(Z2));
+delta1 = d2'*a1;
+delta2 = d3'*a2;
+Theta1_grad = delta1/m;
+Theta2_grad = delta2/m;
+Theta1_cp = Theta1;
+Theta2_cp = Theta2;
+Theta1_cp(:,1) = 0;
+Theta2_cp(:,1) = 0;
+Theta1_cp = (Theta1_cp * lambda)/m;
+Theta2_cp = (Theta2_cp * lambda)/m;
+Theta1_grad = Theta1_grad + Theta1_cp;
+Theta2_grad = Theta2_grad + Theta2_cp;
+
+
+
+Theta1 = Theta1(:, 2:end);
+Theta2 = Theta2(:, 2:end);
+reg1 = trace(Theta1' * Theta1);
+reg2 = trace(Theta2' * Theta2);
+reg = (reg1 + reg2)*lambda/(2 * m);
+J = J + reg;
+
+
+
 
 % -------------------------------------------------------------
 
