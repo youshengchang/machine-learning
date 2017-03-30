@@ -23,19 +23,22 @@ K = size(centroids, 1);
 
 m = size(X, 1);
 dim = size(X, 2);
-
-idx = zeros(1, size(X,1));
+diff = zeros(K,dim);
+idx = zeros(size(X,1), 1);
+sq = zeros(K,dim);
+sqs = zeros(K,1);
 for i = 1:m
   for j = 1:K  
     diff(j,:) = X(i,:) - centroids(j,:);
     
   end
-  [v, id] = min(sumsq(diff,dim));
-  idx(1,i) = id;
+  sq = sumsq(diff,dim);
+  for j = 1:K
+    sqs(j,1) = sum(sq(j,:));
+  end
+  [v,id] = min(sqs);
+  idx(i,1) = id;
 end
-
-
-
 % =============================================================
 
 end
